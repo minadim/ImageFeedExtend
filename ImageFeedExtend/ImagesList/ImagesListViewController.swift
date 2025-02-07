@@ -77,7 +77,7 @@ extension ImagesListViewController: UITableViewDataSource {
             return 
         }
         
-        let isLiked = indexPath.row % 2 != 0
+        let isLiked = indexPath.row % 2 == 0
         cell.configure(with: image, date: dateFormatter.string(from: currentDate), isLiked: isLiked)
     }
 }
