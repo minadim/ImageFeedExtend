@@ -16,6 +16,19 @@ class ProfileViewController: UIViewController {
     @IBOutlet weak var usernameLabel: UILabel!
     @IBOutlet weak var statusLabel: UILabel!
     
+    @IBAction func exitButtonTap(_ sender: Any) {
+    }
     
-    
+    override func viewDidLoad() {
+           super.viewDidLoad()           
+           setupProfile()
+       }
+
+       private func setupProfile() {
+           nameLabel.text = "Екатерина Новикова"
+           usernameLabel.text = "@ekaterina_nov"
+           statusLabel.text = "Hello, world!"
+           profileImage.layer.cornerRadius = profileImage.frame.width / 2
+           profileImage.clipsToBounds = true
+       }
 }
