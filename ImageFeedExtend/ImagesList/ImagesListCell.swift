@@ -10,14 +10,17 @@ import UIKit
 final class ImagesListCell: UITableViewCell {
     
     // MARK: - Static properties
+    
     static let reuseIdentifier = "ImagesListCell"
     
     // MARK: - @IBOutlet properties
+    
     @IBOutlet private weak var cellImage: UIImageView!
     @IBOutlet private weak var likeButton: UIButton!
     @IBOutlet private weak var dataLabel: UILabel!
     
     // MARK: - Private properties
+    
     private var isLiked: Bool = false
     private lazy var gradientLayer: CAGradientLayer = {
         let layer = CAGradientLayer()
@@ -27,6 +30,7 @@ final class ImagesListCell: UITableViewCell {
     }()
     
     // MARK: - Override methods
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         setupUI()
@@ -34,6 +38,7 @@ final class ImagesListCell: UITableViewCell {
     }
     
     // MARK: - Internal methods
+    
     func configure(with image: UIImage?, date: String, isLiked: Bool) {
         cellImage.image = image
         dataLabel.text = date
@@ -42,12 +47,14 @@ final class ImagesListCell: UITableViewCell {
     }
     
     // MARK: - @IBAction methods
+    
     @IBAction private func likeButtonTap(_ sender: UIButton) {
         isLiked.toggle()
         updateLikeButton()
     }
     
     // MARK: - Private Methods
+    
     private func setupUI() {
         cellImage.layer.cornerRadius = 16
         cellImage.layer.masksToBounds = true
