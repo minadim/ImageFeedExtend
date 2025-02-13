@@ -67,7 +67,6 @@ final class ProfileViewController: UIViewController {
     
     private func setupUI() {
         view.backgroundColor = .black
-        
         view.addSubview(profileImage)
         view.addSubview(exitButton)
         view.addSubview(nameLabel)

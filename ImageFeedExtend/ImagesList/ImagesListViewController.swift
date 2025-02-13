@@ -17,7 +17,6 @@ final class ImagesListViewController: UIViewController {
     
     private let photosName: [String] = Array(0..<20).map { "\($0)" }
     private let currentDate = Date()
-    
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
     
     private lazy var dateFormatter: DateFormatter = {
@@ -92,8 +91,8 @@ extension ImagesListViewController: UITableViewDataSource {
         ) as? ImagesListCell else {
             return UITableViewCell()
         }
-        
         configCell(for: imageListCell, with: indexPath)
+        
         imageListCell.selectionStyle = .none
         return imageListCell
     }
