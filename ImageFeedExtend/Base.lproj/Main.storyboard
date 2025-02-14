@@ -113,25 +113,13 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Zno-Xs-Wda">
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleAspectFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Zno-Xs-Wda">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                 <subviews>
-                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="0" translatesAutoresizingMaskIntoConstraints="NO" id="LEw-Yf-aHb">
-                                        <rect key="frame" x="0.0" y="-101" width="1600" height="1059"/>
-                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" insetsLayoutMarginsFromSafeArea="NO" image="0" translatesAutoresizingMaskIntoConstraints="NO" id="LEw-Yf-aHb">
+                                        <rect key="frame" x="-593" y="-82" width="1600" height="1059"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                     </imageView>
-                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c5c-5t-gXY">
-                                        <rect key="frame" x="182" y="830" width="50" height="50"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="50" id="NNd-0v-3Et"/>
-                                            <constraint firstAttribute="height" constant="50" id="NT8-nM-Ylx"/>
-                                        </constraints>
-                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                        <state key="normal" image="sharing_button"/>
-                                        <connections>
-                                            <action selector="didTapShareButton:" destination="akf-Fx-aD0" eventType="touchUpInside" id="QGc-RA-IU9"/>
-                                        </connections>
-                                    </button>
                                 </subviews>
                                 <viewLayoutGuide key="contentLayoutGuide" id="NnS-6g-LxM"/>
                                 <viewLayoutGuide key="frameLayoutGuide" id="hhS-ae-M3y"/>
@@ -152,15 +140,27 @@
                                     <action selector="didTapBackButton:" destination="akf-Fx-aD0" eventType="touchUpInside" id="5nt-Gf-ksr"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c5c-5t-gXY">
+                                <rect key="frame" x="182" y="830" width="50" height="50"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="NNd-0v-3Et"/>
+                                    <constraint firstAttribute="height" constant="50" id="NT8-nM-Ylx"/>
+                                </constraints>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal" image="sharing_button"/>
+                                <connections>
+                                    <action selector="didTapShareButton:" destination="akf-Fx-aD0" eventType="touchUpInside" id="QGc-RA-IU9"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="dGS-PR-iLq"/>
                         <color key="backgroundColor" red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="dGS-PR-iLq" firstAttribute="leading" secondItem="Zno-Xs-Wda" secondAttribute="leading" id="8aj-AY-PUS"/>
                             <constraint firstItem="Zno-Xs-Wda" firstAttribute="trailing" secondItem="dGS-PR-iLq" secondAttribute="trailing" id="9aM-JD-oTM"/>
+                            <constraint firstItem="dGS-PR-iLq" firstAttribute="bottom" secondItem="c5c-5t-gXY" secondAttribute="bottom" constant="16" id="G1S-1E-6fZ"/>
                             <constraint firstAttribute="top" secondItem="Zno-Xs-Wda" secondAttribute="top" id="ILu-V9-RI9"/>
-                            <constraint firstItem="dGS-PR-iLq" firstAttribute="bottom" secondItem="c5c-5t-gXY" secondAttribute="bottom" constant="16" id="Loz-mj-0VC"/>
-                            <constraint firstItem="c5c-5t-gXY" firstAttribute="centerX" secondItem="dGS-PR-iLq" secondAttribute="centerX" id="Ptd-8v-jcw"/>
+                            <constraint firstItem="c5c-5t-gXY" firstAttribute="centerX" secondItem="dGS-PR-iLq" secondAttribute="centerX" id="Xlm-ng-cTl"/>
                             <constraint firstItem="Nlu-Od-9o4" firstAttribute="top" secondItem="dGS-PR-iLq" secondAttribute="top" constant="8" id="cQt-Bz-rif"/>
                             <constraint firstItem="Nlu-Od-9o4" firstAttribute="leading" secondItem="dGS-PR-iLq" secondAttribute="leading" constant="8" id="mqh-Vg-GPz"/>
                             <constraint firstItem="Zno-Xs-Wda" firstAttribute="bottom" secondItem="Auw-Pd-XMU" secondAttribute="bottom" id="pIG-d2-kwo"/>
@@ -184,7 +184,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <viewLayoutGuide key="safeArea" id="4JZ-4V-Qcn"/>
-                        <color key="backgroundColor" red="0.10196078431372549" green="0.10588235294117647" blue="0.12941176470588234" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.10588235294117647" green="0.10588235294117647" blue="0.13725490196078433" alpha="0.0" colorSpace="custom" customColorSpace="calibratedRGB"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="" image="tab_profile_active" id="XRk-PS-c8H"/>
                 </viewController>
@@ -214,11 +214,10 @@
         <!--Navigation Controller-->
         <scene sceneID="b8k-Lu-Gmm">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="0Sd-WO-sLh" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="0Sd-WO-sLh" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="tab_editorial_active" id="aV1-Us-nQF"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="8Cw-xG-1be">
-                        <rect key="frame" x="0.0" y="48" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" name="YP White"/>
                         <color key="barTintColor" name="YP White"/>

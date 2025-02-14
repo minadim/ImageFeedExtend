@@ -11,10 +11,9 @@ final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
     
     var image: UIImage? {
         didSet {
-            guard isViewLoaded else { return }
+            guard isViewLoaded, let image else { return }
             imageView.image = image
-            if let image = image {                rescaleAndCenterImageInScrollView(image: image)
-            }
+            rescaleAndCenterImageInScrollView(image: image)
         }
     }
     
@@ -24,7 +23,6 @@ final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
         guard let image = imageView.image else { return }
         
         let activityViewController = UIActivityViewController(activityItems: [image], applicationActivities: nil)
-        
         present(activityViewController, animated: true, completion: nil)
     }
     
@@ -41,6 +39,7 @@ final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
         imageView.image = image
         if let image = image {
             imageView.image = image
+            imageView.contentMode = .center
             rescaleAndCenterImageInScrollView(image: image)
         }
         scrollView.minimumZoomScale = 0.1
@@ -72,15 +71,11 @@ final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
         let scrollViewSize = scrollView.bounds.size
         let imageViewSize = imageView.frame.size
         
-        let verticalInset = max((scrollViewSize.height - imageViewSize.height) / 2, 0)
-        let horizontalInset = max((scrollViewSize.width - imageViewSize.width) / 2, 0)
+        let offsetX = (scrollViewSize.width > imageViewSize.width) ? (scrollViewSize.width - imageViewSize.width) / 2 : 0
+        let offsetY = (scrollViewSize.height > imageViewSize.height) ? (scrollViewSize.height - imageViewSize.height) / 2 : 0
         
-        scrollView.contentInset = UIEdgeInsets(
-            top: verticalInset,
-            left: horizontalInset,
-            bottom: verticalInset,
-            right: horizontalInset
-        )
+        imageView.center = CGPoint(x: scrollView.contentSize.width / 2 + offsetX,
+                                   y: scrollView.contentSize.height / 2 + offsetY)
     }
     
     // MARK: - UIScrollViewDelegate
@@ -91,5 +86,6 @@ final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
     
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
         centerImage()
+        scrollView.contentInsetAdjustmentBehavior = .never
     }
 }
