@@ -82,15 +82,22 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate {
     }
     
     private func code(from navigationAction: WKNavigationAction) -> String? {
-        guard
-            let url = navigationAction.request.url,
-            let urlComponents = URLComponents(string: url.absoluteString),
-            urlComponents.path == "/oauth/authorize/native",
-            let codeItem = urlComponents.queryItems?.first(where: { $0.name == "code" })
-        else {
-            print("Ошибка: не удалось извлечь код авторизации из URL")
+        guard let url = navigationAction.request.url else {
+            print("Ошибка: URL отсутствует")
             return nil
         }
+        guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            print("Ошибка разбора URL")
+            return nil
+        }
+        for item in urlComponents.queryItems ?? [] {
+            print("Найден параметр: \(item.name) = \(item.value ?? "nil")")
+        }
+        guard let codeItem = urlComponents.queryItems?.first(where: { $0.name == "code" }) else {
+            print("Код авторизации не найден в URL")
+            return nil
+        }
+        print("Код авторизации успешно извлечён: \(codeItem.value ?? "nil")")
         return codeItem.value
     }
     
@@ -101,7 +108,6 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate {
         context: UnsafeMutableRawPointer?
     ) {
         guard keyPath == #keyPath(WKWebView.estimatedProgress) else {
-            super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
             return
         }
         updateProgress()
@@ -116,5 +122,6 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate {
     
     private enum WebViewConstants {
         static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
+        
     }
 }

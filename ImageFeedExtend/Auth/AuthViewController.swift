@@ -58,8 +58,8 @@ extension AuthViewController: WebViewViewControllerDelegate {
                 case .success(let token):
                     self.tokenStorage.token = token
                     self.delegate?.didAuthenticate(self)
-                case .failure:
-                    break
+                case .failure(let error):  
+                    print("Ошибка получения токена: \(error.localizedDescription)")
                 }
             }
         }

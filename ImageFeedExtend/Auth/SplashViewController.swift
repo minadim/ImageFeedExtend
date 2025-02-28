@@ -36,7 +36,6 @@ final class SplashViewController: UIViewController {
               let navigationController = segue.destination as? UINavigationController,
               let authViewController = navigationController.viewControllers.first as? AuthViewController
         else {
-            super.prepare(for: segue, sender: sender)
             return
         }
         authViewController.delegate = self

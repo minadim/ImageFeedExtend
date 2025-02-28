@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Security
 
 final class OAuth2TokenStorage {
     private let key = "OAuthToken"
