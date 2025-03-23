@@ -64,6 +64,12 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if let tabBar = self.tabBarController?.tabBar {
+            tabBar.barTintColor = UIColor(red: 26/255, green: 27/255, blue: 33/255, alpha: 1)
+            tabBar.backgroundColor = UIColor(red: 26/255, green: 27/255, blue: 33/255, alpha: 1)
+        }
+        
         exitButton.addTarget(self, action: #selector(exitButtonTap), for: .touchUpInside)
         setupUI()
         updateProfileDetails()
