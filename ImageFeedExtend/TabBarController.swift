@@ -19,6 +19,8 @@ final class TabBarController: UITabBarController {
         
         tabBar.unselectedItemTintColor = .gray
         tabBar.tintColor = .white
+        tabBar.barTintColor = UIColor(red: 26/255, green: 27/255, blue: 33/255, alpha: 1)
+        tabBar.isTranslucent = false
         
         let storyboard = UIStoryboard(name: "Main", bundle: .main)
         

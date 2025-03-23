@@ -13,7 +13,7 @@ final class SplashViewController: UIViewController {
     
     private let profileService = ProfileService.shared
     private let storage = OAuth2TokenStorage()
-    private let logoImageView: UIImageView = {
+    private lazy var logoImageView: UIImageView = {
         let imageView = UIImageView(image: UIImage(named: "Vector"))
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView

@@ -19,20 +19,6 @@ final class ProfileImageService {
     private var task: URLSessionTask?
     private(set) var avatarURL: String?
     
-    // MARK: - Models
-    
-    private struct UserResult: Decodable {
-        let profileImage: ProfileImage
-        
-        enum CodingKeys: String, CodingKey {
-            case profileImage = "profile_image"
-        }
-    }
-    
-    private struct ProfileImage: Decodable {
-        let small: String
-    }
-    
     // MARK: - Methods
     
     func fetchProfileImageURL(username: String, _ completion: @escaping (Result<String, Error>) -> Void) {
@@ -44,7 +30,7 @@ final class ProfileImageService {
             return
         }
         
-        guard let url = URL(string: "https://api.unsplash.com/users/\(username)") else {
+        guard let url = URL(string: String(format: Constants.profileImageURL, username)) else {
             print("[ProfileImageService]: Ошибка - некорректный URL")
             completion(.failure(NetworkError.unknown))
             return

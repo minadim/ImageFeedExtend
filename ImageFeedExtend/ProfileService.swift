@@ -31,7 +31,13 @@ final class ProfileService {
         }
         lastToken = token
         
-        var request = URLRequest(url: URL(string: "https://api.unsplash.com/me")!)
+        guard let url = URL(string: Constants.profileURL) else {
+            print("[ProfileService]: URLError - Invalid URL")
+            completion(.failure(NSError(domain: "ProfileService", code: -2, userInfo: nil)))
+            return
+        }
+        
+        var request = URLRequest(url: url)
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.httpMethod = "GET"
         
@@ -95,3 +101,4 @@ struct Profile {
         self.bio = profileResult.bio
     }
 }
+

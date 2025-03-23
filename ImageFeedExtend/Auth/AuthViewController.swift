@@ -64,12 +64,12 @@ extension AuthViewController: WebViewViewControllerDelegate {
     }
     
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-        ProgressHUD.animate()
+        UIBlockingProgressHUD.show()
         authService.fetchOAuthToken(code: code) { [weak self] result in
             DispatchQueue.main.async {
                 guard let self = self else {return}
                 
-                ProgressHUD.dismiss()
+                UIBlockingProgressHUD.dismiss()
                 print("fetchOAuthToken завершён")
                 switch result {
                 case .success(let token):
