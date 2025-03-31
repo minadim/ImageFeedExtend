@@ -6,10 +6,15 @@
 //
 
 import UIKit
+import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
     // MARK: - UI Elements
+    
+    private let profileService = ProfileService.shared
+    private let tokenStorage = OAuth2TokenStorage()
+    private var profileImageServiceObserver: NSObjectProtocol?
     
     private let profileImage: UIImageView = {
         let imageView = UIImageView()
@@ -59,8 +64,46 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if let tabBar = self.tabBarController?.tabBar {
+            tabBar.barTintColor = UIColor(red: 26/255, green: 27/255, blue: 33/255, alpha: 1)
+            tabBar.backgroundColor = UIColor(red: 26/255, green: 27/255, blue: 33/255, alpha: 1)
+        }
+        
         exitButton.addTarget(self, action: #selector(exitButtonTap), for: .touchUpInside)
         setupUI()
+        updateProfileDetails()
+        
+        profileImageServiceObserver = NotificationCenter.default
+            .addObserver(
+                forName: ProfileImageService.didChangeNotification,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                guard let self = self else { return }
+                self.updateAvatar()
+            }
+        updateAvatar()
+    }
+    
+    // MARK: - Update Profile //
+    
+    private func updateProfileDetails() {
+        guard let profile = profileService.profile else {
+            print("Ошибка: профиль отсутствует")
+            return
+        }
+        nameLabel.text = profile.name
+        usernameLabel.text = profile.loginName
+        statusLabel.text = profile.bio
+    }
+    
+    private func updateAvatar() {
+        guard
+            let profileImageURL = ProfileImageService.shared.avatarURL,
+            let url = URL(string: profileImageURL)
+        else { return }
+        profileImage.kf.setImage(with: url)
     }
     
     // MARK: - Setup Methods
@@ -103,3 +146,4 @@ final class ProfileViewController: UIViewController {
         // TODO: - Добавить логику при нажатии на кнопку
     }
 }
+

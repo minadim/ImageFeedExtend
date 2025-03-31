@@ -38,21 +38,17 @@ final class ImagesListViewController: UIViewController {
     // MARK: - Prepare Methods
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == showSingleImageSegueIdentifier {
-            guard
-                let viewController = segue.destination as? SingleImageViewController,
-                let indexPath = sender as? IndexPath
-            else {
-                assertionFailure("Invalid segue destination")
-                return
-            }
-            
-            let image = UIImage(named: photosName[indexPath.row])
-            _ = viewController.view
-            viewController.imageView.image = image
-        } else {
-            super.prepare(for: segue, sender: sender)
+        guard
+            segue.identifier == showSingleImageSegueIdentifier,
+            let viewController = segue.destination as? SingleImageViewController,
+            let indexPath = sender as? IndexPath
+        else {
+            assertionFailure("Invalid segue destination")
+            return
         }
+        let image = UIImage(named: photosName[indexPath.row])
+        _ = viewController.view
+        viewController.imageView.image = image
     }
 }
 
@@ -68,7 +64,6 @@ extension ImagesListViewController: UITableViewDelegate {
         guard let image = UIImage(named: photosName[indexPath.row]) else {
             return 0
         }
-        
         let imageViewWidth = tableView.frame.width - 24
         let scaleFactor = imageViewWidth / image.size.width
         let imageViewHeight = image.size.height * scaleFactor
@@ -92,7 +87,6 @@ extension ImagesListViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         configCell(for: imageListCell, with: indexPath)
-        
         imageListCell.selectionStyle = .none
         return imageListCell
     }
@@ -101,11 +95,9 @@ extension ImagesListViewController: UITableViewDataSource {
     
     private  func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
         let imageName = photosName[indexPath.row]
-        
         guard let image = UIImage(named: imageName) else {
             return
         }
-        
         let isLiked = indexPath.row % 2 == 0
         cell.configure(with: image, date: dateFormatter.string(from: currentDate), isLiked: isLiked)
     }

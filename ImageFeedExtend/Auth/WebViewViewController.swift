@@ -20,6 +20,8 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate {
     
     weak var delegate: WebViewViewControllerDelegate?
     
+    private var estimatedProgressObservation: NSKeyValueObservation?
+    
     // MARK: - IBActions
     
     @IBAction private func backButtonTap(_ sender: Any) {
@@ -32,18 +34,12 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate {
         super.viewDidLoad()
         loadAuthView()
         webView.navigationDelegate = self
-        
-        webView.addObserver(
-            self,
-            forKeyPath: #keyPath(WKWebView.estimatedProgress),
-            options: .new,
-            context: nil
-        )
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        webView.removeObserver(self, forKeyPath: #keyPath(WKWebView.estimatedProgress), context: nil)
+        estimatedProgressObservation = webView.observe(
+            \.estimatedProgress,
+             options: [],
+             changeHandler: { [weak self] _, _ in
+                 self?.updateProgress()
+             })
     }
     
     private func loadAuthView() {
@@ -77,6 +73,7 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate {
             decisionHandler(.allow)
             return
         }
+        UIBlockingProgressHUD.show()
         delegate?.webViewViewController(self, didAuthenticateWithCode: code)
         decisionHandler(.cancel)
     }
@@ -101,18 +98,6 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate {
         return codeItem.value
     }
     
-    override func observeValue(
-        forKeyPath keyPath: String?,
-        of object: Any?,
-        change: [NSKeyValueChangeKey : Any]?,
-        context: UnsafeMutableRawPointer?
-    ) {
-        guard keyPath == #keyPath(WKWebView.estimatedProgress) else {
-            return
-        }
-        updateProgress()
-    }
-    
     private func updateProgress() {
         progressView.progress = Float(webView.estimatedProgress)
         progressView.isHidden = fabs(webView.estimatedProgress - 1.0) <= 0.0001
@@ -122,6 +107,5 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate {
     
     private enum WebViewConstants {
         static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
-        
     }
 }

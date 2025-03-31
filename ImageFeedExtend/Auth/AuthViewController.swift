@@ -7,7 +7,6 @@
 
 import UIKit
 
-
 final class AuthViewController: UIViewController {
     
     // MARK: - Properties
@@ -17,6 +16,7 @@ final class AuthViewController: UIViewController {
     private let showWebViewSegueIdentifier = "ShowWebView"
     private let authService = OAuth2Service.shared
     private let tokenStorage = OAuth2TokenStorage()
+    private let profileService = ProfileService.shared
     
     // MARK: - Lifecycle
     
@@ -32,6 +32,17 @@ final class AuthViewController: UIViewController {
         navigationController?.navigationBar.backIndicatorTransitionMaskImage = UIImage(named: "logo_backward")
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
         navigationItem.backBarButtonItem?.tintColor = UIColor(named: "ypBlack")
+    }
+    
+    private func showAlert() {
+        DispatchQueue.main.async {
+            let alert = UIAlertController(title: "Что-то пошло не так",
+                                          message: "Не удалось войти в систему",
+                                          preferredStyle: .alert)
+            let okAction = UIAlertAction(title: "Ок", style: .default)
+            alert.addAction(okAction)
+            self.present(alert, animated: true)
+        }
     }
     
     // MARK: - Navigation
@@ -51,18 +62,37 @@ extension AuthViewController: WebViewViewControllerDelegate {
     }
     
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
+        UIBlockingProgressHUD.show()
         authService.fetchOAuthToken(code: code) { [weak self] result in
             DispatchQueue.main.async {
-                guard let self = self else { return }
+                guard let self = self else {return}
+                
+                UIBlockingProgressHUD.dismiss()
+                print("fetchOAuthToken завершён")
                 switch result {
                 case .success(let token):
                     self.tokenStorage.token = token
+                    self.fetchUserProfile(token: token)
+                case .failure(let error):
+                    print("Ошибка авторизации произошла: \(error.localizedDescription)")
+                    self.showAlert()
+                }
+            }
+        }
+    }
+    
+    private func fetchUserProfile(token: String) {
+        profileService.fetchProfile(token) { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                switch result {
+                case .success:
                     self.delegate?.didAuthenticate(self)
-                case .failure(let error):  
-                    print("Ошибка получения токена: \(error.localizedDescription)")
+                case .failure:
+                    print("Ошибка загрузки профиля")
+                    self.showAlert()
                 }
             }
         }
     }
 }
-
