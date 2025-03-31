@@ -9,11 +9,13 @@ import UIKit
 
 final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
     
-    var image: UIImage? {
+    var imageURL: URL? {
         didSet {
-            guard isViewLoaded, let image else { return }
-            imageView.image = image
-            rescaleAndCenterImageInScrollView(image: image)
+                    guard isViewLoaded, let imageURL else { return }
+                    loadImage(from: imageURL)
+                    if let image = imageView.image {
+                        rescaleAndCenterImageInScrollView(image: image)
+                    }
         }
     }
     
@@ -27,7 +29,7 @@ final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
     }
     
     @IBOutlet weak var scrollView: UIScrollView!
-    @IBOutlet weak var imageView: UIImageView!
+   @IBOutlet weak var imageView: UIImageView!
     @IBAction func didTapBackButton(_ sender: Any) {
         dismiss(animated: true, completion: nil)
     }
@@ -36,16 +38,29 @@ final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        imageView.image = image
-        if let image = image {
-            imageView.image = image
-            imageView.contentMode = .center
-            rescaleAndCenterImageInScrollView(image: image)
-        }
+        if let imageURL = imageURL {
+                    loadImage(from: imageURL)
+                }
+        
         scrollView.minimumZoomScale = 0.1
         scrollView.maximumZoomScale = 1.25
         scrollView.delegate = self
     }
+    
+    // MARK: - Image Loading
+        
+    private func loadImage(from url: URL) {
+            let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
+                guard let self = self, let data = data, let image = UIImage(data: data) else { return }
+                DispatchQueue.main.async {
+                    self.imageView.image = image
+                    self.imageView.contentMode = .center
+                    self.imageView.frame = self.scrollView.bounds // размер под scrollView
+                    self.rescaleAndCenterImageInScrollView(image: image)
+                }
+            }
+            task.resume()
+        }
     
     // MARK: - Private Methods
     
@@ -61,7 +76,6 @@ final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
         
         scrollView.setZoomScale(scale, animated: false)
         scrollView.layoutIfNeeded()
-        
         centerImage()
     }
     
