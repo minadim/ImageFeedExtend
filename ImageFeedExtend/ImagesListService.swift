@@ -40,7 +40,8 @@ struct Photo {
 // MARK: - Класс ImagesListService
 final class ImagesListService {
     static let shared = ImagesListService()
-    
+    static let didChangeNotification = Notification.Name("ImagesListServiceDidChange")
+
     private(set) var photos: [Photo] = []
     private var lastLoadedPage: Int?
     private var isLoading = false
