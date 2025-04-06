@@ -15,9 +15,11 @@ final class ImagesListViewController: UIViewController {
     
     // MARK: - Private properties
     
-    private let photosName: [String] = Array(0..<20).map { "\($0)" }
+    //private let photosName: [String] = Array(0..<20).map { "\($0)" }
     private let currentDate = Date()
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
+    private let imagesListService = ImagesListService.shared //
+    private var photos: [Photo] = [] //
     
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -33,6 +35,14 @@ final class ImagesListViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(updateTableView), name: .didChangeNotification, object: nil)
+        imagesListService.fetchPhotosNextPage()
+    }
+    
+    @objc private func updateTableView() {
+        photos = imagesListService.photos
+        tableView.reloadData()
     }
     
     // MARK: - Prepare Methods
@@ -46,12 +56,13 @@ final class ImagesListViewController: UIViewController {
             assertionFailure("Invalid segue destination")
             return
         }
-        let image = UIImage(named: photosName[indexPath.row])
-        _ = viewController.view
-        viewController.imageView.image = image
+        let photo = photos[indexPath.row]
+            if let imageURL = URL(string: photo.largeImageURL) { // Используй URL большого изображения
+                viewController.imageURL = imageURL
+        }
     }
 }
-
+    
 // MARK: - UITableViewDelegate
 
 extension ImagesListViewController: UITableViewDelegate {
@@ -61,13 +72,17 @@ extension ImagesListViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        guard let image = UIImage(named: photosName[indexPath.row]) else {
-            return 0
-        }
+        let photo = photos[indexPath.row]
         let imageViewWidth = tableView.frame.width - 24
-        let scaleFactor = imageViewWidth / image.size.width
-        let imageViewHeight = image.size.height * scaleFactor
+        let scaleFactor = imageViewWidth / photo.size.width
+        let imageViewHeight = photo.size.height * scaleFactor
         return imageViewHeight + 16
+    }
+        
+        func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+                if indexPath.row + 1 == photos.count {
+                    imagesListService.fetchPhotosNextPage()
+                }
     }
 }
 
@@ -76,7 +91,7 @@ extension ImagesListViewController: UITableViewDelegate {
 extension ImagesListViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return photosName.count
+        return photos.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -94,11 +109,14 @@ extension ImagesListViewController: UITableViewDataSource {
     // MARK: - Configuration
     
     private  func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
-        let imageName = photosName[indexPath.row]
-        guard let image = UIImage(named: imageName) else {
-            return
+        let photo = photos[indexPath.row]
+        guard let imageURL = URL(string: photo.thumbImageURL) else { return }
+                
+                URLSession.shared.dataTask(with: imageURL) { data, _, _ in
+                    guard let data = data, let image = UIImage(data: data) else { return }
+                    DispatchQueue.main.async {
+                        cell.configure(with: image, date: self.dateFormatter.string(from: photo.createdAt ?? Date()), isLiked: photo.isLiked)
+                    }
+                }.resume()
+            }
         }
-        let isLiked = indexPath.row % 2 == 0
-        cell.configure(with: image, date: dateFormatter.string(from: currentDate), isLiked: isLiked)
-    }
-}
