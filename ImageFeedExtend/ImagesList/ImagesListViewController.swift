@@ -15,11 +15,12 @@ final class ImagesListViewController: UIViewController {
     
     // MARK: - Private properties
     
-    //private let photosName: [String] = Array(0..<20).map { "\($0)" }
     private let currentDate = Date()
     private let showSingleImageSegueIdentifier = "ShowSingleImage"
-    private let imagesListService = ImagesListService.shared //
-    private var photos: [Photo] = [] //
+    private let imagesListService = ImagesListService.shared
+    private var photos: [Photo] = []
+    private var isFetchingPhotos = false
+
     
     private lazy var dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -36,13 +37,29 @@ final class ImagesListViewController: UIViewController {
         tableView.dataSource = self
         tableView.contentInset = UIEdgeInsets(top: 12, left: 0, bottom: 12, right: 0)
         
-        NotificationCenter.default.addObserver(self, selector: #selector(updateTableView), name: .didChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateTableViewAnimated), name: .didChangeNotification, object: nil)
         imagesListService.fetchPhotosNextPage()
     }
     
-    @objc private func updateTableView() {
-        photos = imagesListService.photos
-        tableView.reloadData()
+    // MARK: - Обновление таблицы с анимацией
+    
+    @objc private func updateTableViewAnimated() {
+        let oldCount = photos.count
+        let newPhotos = imagesListService.photos
+        let newCount = newPhotos.count
+        
+        guard oldCount != newCount else { return }
+        
+        photos = newPhotos
+        
+        var indexPaths: [IndexPath] = []
+        for index in oldCount..<newCount {
+            indexPaths.append(IndexPath(row: index, section: 0))
+        }
+        
+        tableView.performBatchUpdates {
+            tableView.insertRows(at: indexPaths, with: .automatic)
+        }
     }
     
     // MARK: - Prepare Methods
@@ -56,13 +73,14 @@ final class ImagesListViewController: UIViewController {
             assertionFailure("Invalid segue destination")
             return
         }
+        
         let photo = photos[indexPath.row]
-            if let imageURL = URL(string: photo.largeImageURL) { // Используй URL большого изображения
-                viewController.imageURL = imageURL
+        if let imageURL = URL(string: photo.fullImageUrl) {
+            viewController.imageURL = imageURL
         }
     }
 }
-    
+
 // MARK: - UITableViewDelegate
 
 extension ImagesListViewController: UITableViewDelegate {
@@ -78,11 +96,12 @@ extension ImagesListViewController: UITableViewDelegate {
         let imageViewHeight = photo.size.height * scaleFactor
         return imageViewHeight + 16
     }
-        
-        func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-                if indexPath.row + 1 == photos.count {
-                    imagesListService.fetchPhotosNextPage()
-                }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        if indexPath.row + 1 == photos.count {
+            isFetchingPhotos = true
+            imagesListService.fetchPhotosNextPage()
+        }
     }
 }
 
@@ -101,6 +120,7 @@ extension ImagesListViewController: UITableViewDataSource {
         ) as? ImagesListCell else {
             return UITableViewCell()
         }
+        
         configCell(for: imageListCell, with: indexPath)
         imageListCell.selectionStyle = .none
         return imageListCell
@@ -108,15 +128,75 @@ extension ImagesListViewController: UITableViewDataSource {
     
     // MARK: - Configuration
     
-    private  func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
+    private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
         let photo = photos[indexPath.row]
-        guard let imageURL = URL(string: photo.thumbImageURL) else { return }
+        guard let imageURL = URL(string: photo.thumbImageURL) else {
+            print(" Ошибка: некорректный URL для фото с ID \(photo.id)")
+            return
+        }
+        
+        let placeholder = UIImage(named: "placeholder")
+        
+        cell.delegate = self
+        cell.cellImage.kf.indicatorType = .activity
+        cell.cellImage.kf.setImage(
+            with: imageURL,
+            placeholder: placeholder,
+            options: [
+                .transition(.fade(0.3)),
+                .cacheOriginalImage
+            ]
+        ) { result in
+            switch result {
+            case .success(let value):
+                cell.configure(with: value.image,
+                               date: self.dateFormatter.string(from: photo.createdAt ?? Date()),
+                               isLiked: photo.isLiked)
                 
-                URLSession.shared.dataTask(with: imageURL) { data, _, _ in
-                    guard let data = data, let image = UIImage(data: data) else { return }
-                    DispatchQueue.main.async {
-                        cell.configure(with: image, date: self.dateFormatter.string(from: photo.createdAt ?? Date()), isLiked: photo.isLiked)
-                    }
-                }.resume()
+            case .failure:
+                
+                let formattedDate = photo.createdAt.map { self.dateFormatter.string(from: $0) } ?? "—"
+                cell.configure(
+                    with: placeholder,
+                    date: formattedDate,
+                    isLiked: photo.isLiked
+                )
+                
             }
         }
+    }
+}
+
+// MARK: - ImagesListCellDelegate
+
+extension ImagesListViewController: ImagesListCellDelegate {
+    func imageListCellDidTapLike(_ cell: ImagesListCell) {
+        
+        guard let indexPath = tableView.indexPath(for: cell) else { return }
+        let photo = photos[indexPath.row]
+        
+        DispatchQueue.main.async {
+            UIBlockingProgressHUD.show()
+        }
+        
+        imagesListService.changeLike(photoId: photo.id, isLike: !photo.isLiked) { [weak self] result in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
+                UIBlockingProgressHUD.dismiss()
+                
+                switch result {
+                case .success:
+                    self.photos[indexPath.row].isLiked.toggle()
+                    cell.setIsLiked(self.photos[indexPath.row].isLiked)
+                case .failure(let error):
+                    print("Ошибка при изменении лайка: \(error)")
+                    // TODO: Показать ошибку с использованием UIAlertController
+                }
+            }
+        }
+    }
+}
+
+
+

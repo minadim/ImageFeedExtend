@@ -7,18 +7,24 @@
 
 import UIKit
 
+protocol ImagesListCellDelegate: AnyObject {
+    func imageListCellDidTapLike(_ cell: ImagesListCell)
+}
+
 final class ImagesListCell: UITableViewCell {
     
     // MARK: - Static properties
     static let reuseIdentifier = "ImagesListCell"
     
     // MARK: - @IBOutlet properties
-    @IBOutlet private weak var cellImage: UIImageView!
+    @IBOutlet private(set) weak var cellImage: UIImageView!
     @IBOutlet private weak var likeButton: UIButton!
     @IBOutlet private weak var dataLabel: UILabel!
     
     // MARK: - Private properties
     private var isLiked: Bool = false
+    weak var delegate: ImagesListCellDelegate?
+    
     private lazy var gradientLayer: CAGradientLayer = {
         let layer = CAGradientLayer()
         layer.colors = [UIColor.black.withAlphaComponent(0.2).cgColor, UIColor.clear.cgColor]
@@ -33,6 +39,12 @@ final class ImagesListCell: UITableViewCell {
         applyGradient()
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        cellImage.kf.cancelDownloadTask()
+        cellImage.image = nil
+    }
+    
     // MARK: - Internal methods
     func configure(with image: UIImage?, date: String, isLiked: Bool) {
         cellImage.image = image
@@ -41,10 +53,16 @@ final class ImagesListCell: UITableViewCell {
         updateLikeButton()
     }
     
+    func setIsLiked(_ isLiked: Bool) {
+        self.isLiked = isLiked
+        updateLikeButton()
+    }
+    
     // MARK: - @IBAction methods
     @IBAction private func likeButtonTap(_ sender: UIButton) {
         isLiked.toggle()
         updateLikeButton()
+        delegate?.imageListCellDidTapLike(self)
     }
     
     // MARK: - Private Methods
