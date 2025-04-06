@@ -16,7 +16,12 @@ final class ProfileService {
     private var lastToken: String?
     
     static let shared = ProfileService()
+    
     private(set) var profile: Profile?
+    
+    func resetProfile() {
+        profile = nil
+    }
     
     // MARK: - Public Methods
     
@@ -29,6 +34,7 @@ final class ProfileService {
                 return
             }
         }
+        
         lastToken = token
         
         guard let url = URL(string: Constants.profileURL) else {
@@ -71,6 +77,7 @@ final class ProfileService {
                 }
             }
         }
+        
         task?.resume()
     }
 }

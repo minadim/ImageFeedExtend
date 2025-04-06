@@ -8,7 +8,6 @@
 import UIKit
 @preconcurrency import WebKit
 
-
 final class WebViewViewController: UIViewController, WKNavigationDelegate {
     
     // MARK: - IBOutlets

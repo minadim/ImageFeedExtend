@@ -13,17 +13,20 @@ import Network
 struct OAuthTokenResponseBody: Decodable {
     let accessToken: String
     
-    private enum CodingKeys: String, CodingKey {
+    enum CodingKeys: String, CodingKey {
         case accessToken = "access_token"
     }
 }
 
 final class OAuth2Service {
+    private let tokenStorage = OAuth2TokenStorage()
     
     // MARK: - Singleton
     
     static let shared = OAuth2Service()
     private init() {}
+    
+    private var accessToken: String?
     
     private var currentCode: String?
     private var completions: [(Result<String, Error>) -> Void] = []
@@ -54,12 +57,14 @@ final class OAuth2Service {
             print("[OAuth2Service]: JSONSerialization Error - \(error.localizedDescription)")
             return nil
         }
+        
         return request
     }
     
     // MARK: - Public Methods
     
-    func fetchOAuthToken(code: String, completion: @escaping (Result<String, Error>) -> Void) {
+    func fetchOAuthToken(code: String, completion: @escaping (Result<String, Error>) -> Void)
+    {
         DispatchQueue.main.async {
             if let currentCode = self.currentCode, currentCode == code {
                 self.completions.append(completion)
@@ -81,6 +86,8 @@ final class OAuth2Service {
                     let finalResult: Result<String, Error>
                     switch result {
                     case .success(let responseBody):
+                        self.tokenStorage.token = responseBody.accessToken
+                        UserDefaults.standard.synchronize()
                         finalResult = .success(responseBody.accessToken)
                     case .failure(let error):
                         finalResult = .failure(error)
@@ -91,6 +98,7 @@ final class OAuth2Service {
                     self.currentCode = nil
                 }
             }
+            
             self.currentTask?.resume()
         }
     }
@@ -125,6 +133,7 @@ private extension URLSession {
                 }
             }
         }
+        
         return task
     }
 }

@@ -11,15 +11,15 @@ import ProgressHUD
 final class UIBlockingProgressHUD {
     
     // MARK: - Private Properties
-
+    
     private static var window: UIWindow? {
         return UIApplication.shared.windows.first
     }
     
-    private static var isVisible = false
+    private(set) static var isVisible = false
     
     // MARK: - Public Methods
-
+    
     static func show() {
         guard !isVisible else { return }
         isVisible = true
