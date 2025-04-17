@@ -1,0 +1,57 @@
+{
+  "configurations" : [
+    {
+      "id" : "BA0C4CB8-1A7F-4EAA-8107-9E4FA208FACD",
+      "name" : "Test Scheme Action",
+      "options" : {
+        "commandLineArgumentEntries" : [
+          {
+            "argument" : "UITestMode"
+          }
+        ]
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:ImageFeedExtend.xcodeproj",
+      "identifier" : "D57721312D47E5BD00EC4A3A",
+      "name" : "ImageFeedExtend"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:ImageFeedExtend.xcodeproj",
+        "identifier" : "D57721472D47E5BF00EC4A3A",
+        "name" : "ImageFeedExtendTests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:ImageFeedExtend.xcodeproj",
+        "identifier" : "D57721512D47E5BF00EC4A3A",
+        "name" : "ImageFeedExtendUITests"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:ImageFeedExtend.xcodeproj",
+        "identifier" : "D50ADC752DAB01AD0041C57F",
+        "name" : "ImageFeedExtendTests1"
+      }
+    },
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:ImageFeedExtend.xcodeproj",
+        "identifier" : "D50ADF0F2DAEE7FB0041C57F",
+        "name" : "ImageFeedExtendTests2"
+      }
+    }
+  ],
+  "version" : 1
+}

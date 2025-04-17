@@ -22,6 +22,8 @@ final class AuthViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        let authHelper = AuthHelper()
+        print(authHelper.authURL()?.absoluteString ?? "URL is nil")
         configureBackButton()
     }
     
@@ -48,8 +50,19 @@ final class AuthViewController: UIViewController {
     // MARK: - Navigation
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let webViewVC = segue.destination as? WebViewViewController {
-            webViewVC.delegate = self
+        
+        if segue.identifier == showWebViewSegueIdentifier {
+            guard let webViewViewController = segue.destination as? WebViewViewController else {
+                assertionFailure("Failed to prepare for \(showWebViewSegueIdentifier)")
+                return
+            }
+            let authHelper = AuthHelper()
+            let webViewPresenter = WebViewPresenter(authHelper: authHelper)
+            webViewViewController.presenter = webViewPresenter
+            webViewPresenter.view = webViewViewController
+            webViewViewController.delegate = self
+        } else {
+            super.prepare(for: segue, sender: sender)
         }
     }
 }

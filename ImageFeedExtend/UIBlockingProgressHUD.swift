@@ -13,7 +13,10 @@ final class UIBlockingProgressHUD {
     // MARK: - Private Properties
     
     private static var window: UIWindow? {
-        return UIApplication.shared.windows.first
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            return windowScene.windows.first
+        }
+        return nil
     }
     
     private(set) static var isVisible = false

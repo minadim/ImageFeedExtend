@@ -14,9 +14,9 @@ final class SplashViewController: UIViewController {
     private let profileService = ProfileService.shared
     private let storage = OAuth2TokenStorage()
     private lazy var logoImageView: UIImageView = {
-        let imageView = UIImageView(image: UIImage(named: "Vector"))
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        return imageView
+    let imageView = UIImageView(image: UIImage(named: "Vector"))
+    imageView.translatesAutoresizingMaskIntoConstraints = false
+    return imageView
     }()
     
     // MARK: - Lifecycle
@@ -100,6 +100,7 @@ final class SplashViewController: UIViewController {
 extension SplashViewController: AuthViewControllerDelegate {
     func didAuthenticate(_ vc: AuthViewController) {
         vc.dismiss(animated: true) { [weak self] in
+            print("Auth dismissed, token: \(self?.storage.token ?? "nil")")
             guard let token = self?.storage.token else { return }
             self?.fetchProfile(token: token)
         }

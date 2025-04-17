@@ -8,7 +8,15 @@
 import UIKit
 @preconcurrency import WebKit
 
-final class WebViewViewController: UIViewController, WKNavigationDelegate {
+public protocol WebViewViewControllerProtocol: AnyObject {
+    var presenter: WebViewPresenterProtocol? { get set }
+    func load(request: URLRequest)
+    func setProgressValue(_ newValue: Float)
+    func setProgressHidden(_ isHidden: Bool)
+}
+
+final class WebViewViewController: UIViewController, WebViewViewControllerProtocol, WKNavigationDelegate {
+    var presenter: WebViewPresenterProtocol?
     
     // MARK: - IBOutlets
     
@@ -31,34 +39,28 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadAuthView()
+        webView.accessibilityIdentifier = "UnsplashWebView"
+        presenter?.viewDidLoad()
         webView.navigationDelegate = self
         estimatedProgressObservation = webView.observe(
             \.estimatedProgress,
              options: [],
              changeHandler: { [weak self] _, _ in
-                 self?.updateProgress()
+                 guard let self = self else { return }
+                 self.presenter?.didUpdateProgressValue(self.webView.estimatedProgress)
              })
     }
     
-    private func loadAuthView() {
-        guard var urlComponents = URLComponents(string: WebViewConstants.unsplashAuthorizeURLString) else {
-            print("Ошибка: не удалось создать URLComponents")
-            return
-        }
-        
-        urlComponents.queryItems = [
-            URLQueryItem(name: "client_id", value: Constants.accessKey),
-            URLQueryItem(name: "redirect_uri", value: Constants.redirectURI),
-            URLQueryItem(name: "response_type", value: "code"),
-            URLQueryItem(name: "scope", value: Constants.accessScope)
-        ]
-        guard let url = urlComponents.url else {
-            print("Ошибка: не удалось получить URL из URLComponents")
-            return
-        }
-        let request = URLRequest(url: url)
+    func load(request: URLRequest) {
         webView.load(request)
+    }
+    
+    func setProgressValue(_ newValue: Float) {
+        progressView.progress = newValue
+    }
+    
+    func setProgressHidden(_ isHidden: Bool) {
+        progressView.isHidden = isHidden
     }
     
     // MARK: - WKNavigationDelegate
@@ -78,33 +80,10 @@ final class WebViewViewController: UIViewController, WKNavigationDelegate {
     }
     
     private func code(from navigationAction: WKNavigationAction) -> String? {
-        guard let url = navigationAction.request.url else {
-            print("Ошибка: URL отсутствует")
-            return nil
+        if let url = navigationAction.request.url {
+            return presenter?.code(from: url)
         }
-        guard let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
-            print("Ошибка разбора URL")
-            return nil
-        }
-        for item in urlComponents.queryItems ?? [] {
-            print("Найден параметр: \(item.name) = \(item.value ?? "nil")")
-        }
-        guard let codeItem = urlComponents.queryItems?.first(where: { $0.name == "code" }) else {
-            print("Код авторизации не найден в URL")
-            return nil
-        }
-        print("Код авторизации успешно извлечён: \(codeItem.value ?? "nil")")
-        return codeItem.value
-    }
-    
-    private func updateProgress() {
-        progressView.progress = Float(webView.estimatedProgress)
-        progressView.isHidden = fabs(webView.estimatedProgress - 1.0) <= 0.0001
-    }
-    
-    // MARK: - Constants
-    
-    private enum WebViewConstants {
-        static let unsplashAuthorizeURLString = "https://unsplash.com/oauth/authorize"
+        return nil
     }
 }
+
