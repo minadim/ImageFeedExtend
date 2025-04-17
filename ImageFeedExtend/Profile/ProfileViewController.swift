@@ -83,6 +83,7 @@ final class ProfileViewController: UIViewController {
                 guard let self = self else { return }
                 self.updateAvatar()
             }
+        
         updateAvatar()
     }
     
@@ -143,7 +144,31 @@ final class ProfileViewController: UIViewController {
     // MARK: - Actions
     
     @objc private func exitButtonTap() {
-        // TODO: - Добавить логику при нажатии на кнопку
+        let alertController = UIAlertController(
+            title: "Пока, пока!",
+            message: "Вы уверены, что хотите выйти?",
+            preferredStyle: .alert
+        )
+        
+        alertController.addAction(UIAlertAction(title: "Нет", style: .cancel, handler: nil))
+        
+        alertController.addAction(UIAlertAction(title: "Да", style: .destructive, handler: { [weak self] _ in
+            self?.logout()
+        }))
+        
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    private func logout() {
+        tokenStorage.token = nil
+        
+        HTTPCookieStorage.shared.removeCookies(since: .distantPast)
+        
+        if let window = view.window {
+            let splashViewController = SplashViewController()
+            window.rootViewController = splashViewController
+            UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil, completion: nil)
+        }
     }
 }
 

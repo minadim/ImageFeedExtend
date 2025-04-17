@@ -6,16 +6,17 @@
 //
 
 import UIKit
+import Kingfisher
+import ProgressHUD
 
 final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
     
+    var fullImageUrl: URL?
+    
     var imageURL: URL? {
         didSet {
-                    guard isViewLoaded, let imageURL else { return }
-                    loadImage(from: imageURL)
-                    if let image = imageView.image {
-                        rescaleAndCenterImageInScrollView(image: image)
-                    }
+            guard isViewLoaded, let imageURL else { return }
+            setImage(with: imageURL)
         }
     }
     
@@ -29,54 +30,96 @@ final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
     }
     
     @IBOutlet weak var scrollView: UIScrollView!
-   @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var imageView: UIImageView!
     @IBAction func didTapBackButton(_ sender: Any) {
         dismiss(animated: true, completion: nil)
     }
+    
+    // MARK: - Properties
+    
+    private var loaderImageView: UIImageView!
     
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupLoaderImageView()
         if let imageURL = imageURL {
-                    loadImage(from: imageURL)
-                }
+            setImage(with: imageURL)
+        }
         
         scrollView.minimumZoomScale = 0.1
         scrollView.maximumZoomScale = 1.25
         scrollView.delegate = self
+        
+        loaderImageView.isHidden = false
     }
     
-    // MARK: - Image Loading
+    // MARK: - Image Loading с Kingfisher
+    
+    private func setImage(with url: URL) {
+        UIBlockingProgressHUD.show()
+        loaderImageView.isHidden = false
         
-    private func loadImage(from url: URL) {
-            let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
-                guard let self = self, let data = data, let image = UIImage(data: data) else { return }
-                DispatchQueue.main.async {
-                    self.imageView.image = image
-                    self.imageView.contentMode = .center
-                    self.imageView.frame = self.scrollView.bounds // размер под scrollView
-                    self.rescaleAndCenterImageInScrollView(image: image)
-                }
+        imageView.kf.setImage(with: url) { [weak self] result in
+            UIBlockingProgressHUD.dismiss()
+            DispatchQueue.main.async {
+                self?.loaderImageView.isHidden = true
             }
-            task.resume()
+            
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let imageResult):
+                self.imageView.image = imageResult.image
+                self.imageView.contentMode = .scaleAspectFit
+                self.imageView.frame = CGRect(origin: .zero, size: imageResult.image.size)
+                self.scrollView.contentSize = imageResult.image.size
+                self.rescaleAndCenterImageInScrollView(image: imageResult.image)
+            case .failure:
+                self.showError(for: url)
+            }
         }
+    }
+    
+    private func showError(for url: URL) {
+        let alert = UIAlertController(
+            title: "Что-то пошло не так",
+            message: "Попробовать ещё раз?",
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "Не надо", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Повторить", style: .default) { _ in
+            self.setImage(with: url)
+        })
+        
+        present(alert, animated: true)
+    }
     
     // MARK: - Private Methods
     
     private func rescaleAndCenterImageInScrollView(image: UIImage) {
-        let minZoomScale = scrollView.minimumZoomScale
-        let maxZoomScale = scrollView.maximumZoomScale
-        view.layoutIfNeeded()
-        let visibleRectSize = scrollView.bounds.size
+        let scrollViewSize = scrollView.bounds.size
         let imageSize = image.size
-        let hScale = visibleRectSize.width / imageSize.width
-        let vScale = visibleRectSize.height / imageSize.height
-        let scale = min(maxZoomScale, max(minZoomScale, min(hScale, vScale)))
         
-        scrollView.setZoomScale(scale, animated: false)
-        scrollView.layoutIfNeeded()
-        centerImage()
+        let scale = scrollViewSize.height / imageSize.height
+        
+        scrollView.minimumZoomScale = scale
+        scrollView.maximumZoomScale = 3.0
+        scrollView.zoomScale = scale
+        
+        let scaledSize = CGSize(width: imageSize.width * scale, height: imageSize.height * scale)
+        imageView.frame = CGRect(origin: .zero, size: scaledSize)
+        scrollView.contentSize = scaledSize
+        
+        let horizontalInset = max((scrollViewSize.width - scaledSize.width) / 2, 0)
+        scrollView.contentInset = UIEdgeInsets(top: 0, left: horizontalInset, bottom: 0, right: 0)
+        
+        if scaledSize.width > scrollViewSize.width {
+            let xOffset = (scaledSize.width - scrollViewSize.width) / 2
+            scrollView.setContentOffset(CGPoint(x: xOffset, y: 0), animated: false)
+        }
     }
     
     // MARK: - Centering Method
@@ -101,5 +144,15 @@ final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
     func scrollViewDidZoom(_ scrollView: UIScrollView) {
         centerImage()
         scrollView.contentInsetAdjustmentBehavior = .never
+    }
+    
+    private func setupLoaderImageView() {
+        loaderImageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 83, height: 75))
+        
+        loaderImageView.image = UIImage(named: "loader")
+        loaderImageView.contentMode = .scaleAspectFit
+        loaderImageView.center = view.center
+        
+        view.addSubview(loaderImageView)
     }
 }

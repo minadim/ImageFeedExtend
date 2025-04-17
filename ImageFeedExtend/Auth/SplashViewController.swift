@@ -31,7 +31,7 @@ final class SplashViewController: UIViewController {
         checkAuthenticationStatus()
     }
     
-    // MARK: - Private Methods //
+    // MARK: - Private Methods
     
     private func setupUI() {
         view.backgroundColor = UIColor(red: 26/255, green: 27/255, blue: 34/255, alpha: 1)
@@ -48,6 +48,7 @@ final class SplashViewController: UIViewController {
             showAuthViewController()
             return
         }
+        
         fetchProfile(token: token)
     }
     
@@ -56,6 +57,7 @@ final class SplashViewController: UIViewController {
         guard let authViewController = storyboard.instantiateViewController(withIdentifier: "AuthViewController") as? AuthViewController else {
             return
         }
+        
         authViewController.delegate = self
         authViewController.modalPresentationStyle = .fullScreen
         present(authViewController, animated: true, completion: nil)
@@ -86,6 +88,7 @@ final class SplashViewController: UIViewController {
             assertionFailure("Invalid window configuration")
             return
         }
+        
         let tabBarController = TabBarController()
         window.rootViewController = tabBarController
         window.makeKeyAndVisible()

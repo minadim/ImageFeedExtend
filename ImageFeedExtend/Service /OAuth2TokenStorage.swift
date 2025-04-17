@@ -10,7 +10,10 @@ import Security
 import SwiftKeychainWrapper
 
 final class OAuth2TokenStorage {
-    private let key = "OAuthToken"
+    
+    private let key = "OAuthToken"    
+    
+    static let shared = OAuth2TokenStorage()
     
     var token: String? {
         get { KeychainWrapper.standard.string(forKey: key) }
@@ -22,4 +25,10 @@ final class OAuth2TokenStorage {
             }
         }
     }
+    
+    func reset() {
+        token = nil
+    }
+    
+    init() {}
 }
