@@ -35,6 +35,7 @@ final class ImagesListCell: UITableViewCell {
     // MARK: - Override methods
     override func awakeFromNib() {
         super.awakeFromNib()
+        self.accessibilityIdentifier = "ImagesListCell"
         setupUI()
         applyGradient()
     }
@@ -47,9 +48,9 @@ final class ImagesListCell: UITableViewCell {
     
     // MARK: - Internal methods
     func configure(with image: UIImage?, date: String, isLiked: Bool) {
+        self.isLiked = isLiked
         cellImage.image = image
         dataLabel.text = date
-        self.isLiked = isLiked
         updateLikeButton()
     }
     
@@ -78,6 +79,9 @@ final class ImagesListCell: UITableViewCell {
     private func updateLikeButton() {
         let likeImage = isLiked ? UIImage(named: "like_button") : UIImage(named: "like_button_off")
         likeButton.setImage(likeImage, for: .normal)
+        likeButton.accessibilityIdentifier = "Like Button"
+        likeButton.accessibilityValue = isLiked ? "On" : "Off"
+        
     }
     
     private func applyGradient() {

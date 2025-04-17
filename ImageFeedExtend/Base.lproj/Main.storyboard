@@ -17,7 +17,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="C2h-Xj-Q3U">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" restorationIdentifier="Í" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="C2h-Xj-Q3U">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <color key="tintColor" name="AccentColor"/>
@@ -73,6 +73,9 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" red="0.10196078431372549" green="0.10588235294117647" blue="0.13333333333333333" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <accessibility key="accessibilityConfiguration" identifier="ImagesListCell">
+                                            <bool key="isElement" value="YES"/>
+                                        </accessibility>
                                         <connections>
                                             <outlet property="cellImage" destination="NjI-Xp-bnC" id="qXp-4a-2rS"/>
                                             <outlet property="dataLabel" destination="r04-vt-8Yn" id="OfA-hD-FKQ"/>
@@ -80,6 +83,9 @@
                                         </connections>
                                     </tableViewCell>
                                 </prototypes>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="string" keyPath="accessibilityIdentifier" value="ImagesListTable"/>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <outlet property="dataSource" destination="BYZ-38-t0r" id="cMx-2B-Obv"/>
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="fBA-Bo-mRT"/>
@@ -130,6 +136,7 @@
                             </scrollView>
                             <button opaque="NO" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Nlu-Od-9o4">
                                 <rect key="frame" x="8" y="8" width="48" height="48"/>
+                                <accessibility key="accessibilityConfiguration" identifier="nav back button white"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="Vu0-l7-3Zt"/>
                                     <constraint firstAttribute="width" constant="48" id="XOW-Aj-f0t"/>
@@ -220,14 +227,15 @@
         <!--AuthViewController-->
         <scene sceneID="urt-QK-BcS">
             <objects>
-                <viewController storyboardIdentifier="AuthViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="9rM-Lx-FrO" userLabel="AuthViewController" customClass="AuthViewController" customModule="ImageFeedExtend" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="AuthViewController" id="9rM-Lx-FrO" userLabel="AuthViewController" customClass="AuthViewController" customModule="ImageFeedExtend" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="P54-un-o2w">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="886"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IYR-5E-1iM">
-                                <rect key="frame" x="16" y="719" width="382" height="48"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" adjustsImageSizeForAccessibilityContentSizeCategory="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IYR-5E-1iM">
+                                <rect key="frame" x="16" y="743" width="382" height="48"/>
                                 <color key="backgroundColor" red="0.99607843137254903" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <accessibility key="accessibilityConfiguration" identifier="AuthButton"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="48" id="zQj-cM-ZBL"/>
                                 </constraints>
@@ -243,11 +251,11 @@
                                     <userDefinedRuntimeAttribute type="boolean" keyPath="layer.masksToBounds" value="YES"/>
                                 </userDefinedRuntimeAttributes>
                                 <connections>
-                                    <segue destination="7ea-LJ-MXr" kind="presentation" modalPresentationStyle="overFullScreen" id="V2y-K6-mTc"/>
+                                    <segue destination="7ea-LJ-MXr" kind="presentation" identifier="ShowWebView" modalPresentationStyle="overFullScreen" id="V2y-K6-mTc"/>
                                 </connections>
                             </button>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="logo_unsplash" translatesAutoresizingMaskIntoConstraints="NO" id="yio-fu-54H" userLabel="logo_unsplash">
-                                <rect key="frame" x="177" y="418" width="60" height="60"/>
+                                <rect key="frame" x="177" y="413" width="60" height="60"/>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="SAj-JR-Dlu"/>
@@ -270,18 +278,21 @@
         <!--WebViewViewController-->
         <scene sceneID="sJu-dd-FeM">
             <objects>
-                <viewController id="7ea-LJ-MXr" userLabel="WebViewViewController" customClass="WebViewViewController" customModule="ImageFeedExtend" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="WebViewViewController" id="7ea-LJ-MXr" userLabel="WebViewViewController" customClass="WebViewViewController" customModule="ImageFeedExtend" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="QaI-xZ-PCu">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xqn-8J-Jw9">
+                            <wkWebView contentMode="scaleToFill" restorationIdentifier="UnsplashWebView" translatesAutoresizingMaskIntoConstraints="NO" id="xqn-8J-Jw9">
                                 <rect key="frame" x="0.0" y="56" width="414" height="840"/>
                                 <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <wkWebViewConfiguration key="configuration">
                                     <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
                                     <wkPreferences key="preferences"/>
                                 </wkWebViewConfiguration>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="boolean" keyPath="UnsplashWebView" value="YES"/>
+                                </userDefinedRuntimeAttributes>
                             </wkWebView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="x6J-L4-JuL">
                                 <rect key="frame" x="8" y="8" width="48" height="48"/>
@@ -305,6 +316,10 @@
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="i15-ca-sQM"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <accessibility key="accessibilityConfiguration">
+                            <accessibilityTraits key="traits" image="YES"/>
+                            <bool key="isElement" value="YES"/>
+                        </accessibility>
                         <constraints>
                             <constraint firstItem="xqn-8J-Jw9" firstAttribute="leading" secondItem="QaI-xZ-PCu" secondAttribute="leading" id="1Ul-90-o0N"/>
                             <constraint firstItem="x6J-L4-JuL" firstAttribute="leading" secondItem="i15-ca-sQM" secondAttribute="leading" constant="8" id="9jF-AW-gp7"/>
@@ -329,7 +344,7 @@
         </scene>
     </scenes>
     <inferredMetricsTieBreakers>
-        <segue reference="hcv-Dh-HlN"/>
+        <segue reference="UCQ-4q-XNn"/>
     </inferredMetricsTieBreakers>
     <resources>
         <image name="0" width="1600" height="1059"/>

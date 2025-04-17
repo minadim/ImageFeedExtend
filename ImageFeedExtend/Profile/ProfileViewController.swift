@@ -10,11 +10,13 @@ import Kingfisher
 
 final class ProfileViewController: UIViewController {
     
-    // MARK: - UI Elements
+    // MARK: - Properties
+    private var presenter: ProfilePresenterProtocol?
     
-    private let profileService = ProfileService.shared
-    private let tokenStorage = OAuth2TokenStorage()
-    private var profileImageServiceObserver: NSObjectProtocol?
+    func configure(_ presenter: ProfilePresenterProtocol) {
+        self.presenter = presenter
+        presenter.view = self
+    }
     
     private let profileImage: UIImageView = {
         let imageView = UIImageView()
@@ -36,7 +38,6 @@ final class ProfileViewController: UIViewController {
     private let nameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Екатерина Новикова"
         label.font = UIFont.systemFont(ofSize: 23, weight: .semibold)
         label.textColor = .white
         return label
@@ -45,7 +46,6 @@ final class ProfileViewController: UIViewController {
     private let usernameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "@ekaterina_nov"
         label.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         label.textColor = UIColor(red: 174/255, green: 175/255, blue: 180/255, alpha: 1.0)
         return label
@@ -54,7 +54,6 @@ final class ProfileViewController: UIViewController {
     private let statusLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Hello, world!"
         label.font = UIFont.systemFont(ofSize: 13, weight: .regular)
         label.textColor = .white
         return label
@@ -65,54 +64,18 @@ final class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if let tabBar = self.tabBarController?.tabBar {
-            tabBar.barTintColor = UIColor(red: 26/255, green: 27/255, blue: 33/255, alpha: 1)
-            tabBar.backgroundColor = UIColor(red: 26/255, green: 27/255, blue: 33/255, alpha: 1)
+        if presenter == nil {
+            configure(ProfilePresenter())
         }
         
-        exitButton.addTarget(self, action: #selector(exitButtonTap), for: .touchUpInside)
+        presenter?.viewDidLoad()
         setupUI()
-        updateProfileDetails()
-        
-        profileImageServiceObserver = NotificationCenter.default
-            .addObserver(
-                forName: ProfileImageService.didChangeNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                guard let self = self else { return }
-                self.updateAvatar()
-            }
-        
-        updateAvatar()
     }
-    
-    // MARK: - Update Profile //
-    
-    private func updateProfileDetails() {
-        guard let profile = profileService.profile else {
-            print("Ошибка: профиль отсутствует")
-            return
-        }
-        nameLabel.text = profile.name
-        usernameLabel.text = profile.loginName
-        statusLabel.text = profile.bio
-    }
-    
-    private func updateAvatar() {
-        guard
-            let profileImageURL = ProfileImageService.shared.avatarURL,
-            let url = URL(string: profileImageURL)
-        else { return }
-        profileImage.kf.setImage(with: url)
-    }
-    
-    // MARK: - Setup Methods
     
     private func setupUI() {
         view.backgroundColor = UIColor(red: 27/255, green: 27/255, blue: 35/255, alpha: 1.0)
+        
         [profileImage, exitButton, nameLabel, usernameLabel, statusLabel].forEach {
-            $0.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview($0)
         }
         
@@ -139,36 +102,48 @@ final class ProfileViewController: UIViewController {
             statusLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             statusLabel.topAnchor.constraint(equalTo: usernameLabel.bottomAnchor, constant: 8)
         ])
+        
+        exitButton.addTarget(self, action: #selector(exitButtonTap), for: .touchUpInside)
     }
     
     // MARK: - Actions
     
     @objc private func exitButtonTap() {
+        presenter?.didTapLogout()
+    }
+}
+
+// MARK: - ProfileViewProtocol
+
+extension ProfileViewController: ProfileViewProtocol {
+    func updateProfile(name: String, username: String, bio: String) {
+        nameLabel.text = name
+        usernameLabel.text = username
+        statusLabel.text = bio
+    }
+    
+    func updateAvatar(url: URL) {
+        profileImage.kf.setImage(with: url)
+    }
+    
+    func showLogoutAlert() {
         let alertController = UIAlertController(
             title: "Пока, пока!",
             message: "Вы уверены, что хотите выйти?",
             preferredStyle: .alert
         )
-        
         alertController.addAction(UIAlertAction(title: "Нет", style: .cancel, handler: nil))
-        
         alertController.addAction(UIAlertAction(title: "Да", style: .destructive, handler: { [weak self] _ in
-            self?.logout()
+            self?.presenter?.confirmLogout()
         }))
-        
-        present(alertController, animated: true, completion: nil)
+        present(alertController, animated: true)
     }
     
-    private func logout() {
-        tokenStorage.token = nil
-        
-        HTTPCookieStorage.shared.removeCookies(since: .distantPast)
-        
+    func resetToSplashScreen() {
         if let window = view.window {
-            let splashViewController = SplashViewController()
-            window.rootViewController = splashViewController
+            let splashVC = SplashViewController()
+            window.rootViewController = splashVC
             UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve, animations: nil, completion: nil)
         }
     }
 }
-

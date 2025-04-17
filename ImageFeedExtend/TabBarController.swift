@@ -24,9 +24,16 @@ final class TabBarController: UITabBarController {
         
         let storyboard = UIStoryboard(name: "Main", bundle: .main)
         
-        let imagesListViewController = storyboard.instantiateViewController(
+        guard let imagesListViewController = storyboard.instantiateViewController(
             withIdentifier: "ImagesListViewController"
-        )
+        ) as? ImagesListViewController else {
+            assertionFailure("Не удалось найти ImagesListViewController по идентификатору")
+            return
+        }
+        
+        let presenter = ImagesListPresenter()
+        imagesListViewController.configure(presenter)
+        
         imagesListViewController.tabBarItem = UITabBarItem(
             title: "",
             image: UIImage(named: "tab_editorial_active")?.withRenderingMode(.alwaysTemplate),
@@ -39,7 +46,7 @@ final class TabBarController: UITabBarController {
             image: UIImage(named: "tab_profile_active")?.withRenderingMode(.alwaysTemplate),
             selectedImage: nil
         )
+        
         self.viewControllers = [imagesListViewController, profileViewController]
     }
 }
-

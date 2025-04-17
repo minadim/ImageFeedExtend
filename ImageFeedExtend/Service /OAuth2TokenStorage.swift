@@ -11,7 +11,7 @@ import SwiftKeychainWrapper
 
 final class OAuth2TokenStorage {
     
-    private let key = "OAuthToken"    
+    private let key = "OAuthToken"
     
     static let shared = OAuth2TokenStorage()
     
@@ -29,6 +29,4 @@ final class OAuth2TokenStorage {
     func reset() {
         token = nil
     }
-    
-    init() {}
 }

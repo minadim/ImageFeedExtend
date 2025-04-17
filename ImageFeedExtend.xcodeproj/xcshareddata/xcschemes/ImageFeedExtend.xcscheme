@@ -27,8 +27,13 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      shouldAutocreateTestPlan = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES">
+      <TestPlans>
+         <TestPlanReference
+            reference = "container:ImageFeedExtend.xctestplan"
+            default = "YES">
+         </TestPlanReference>
+      </TestPlans>
       <Testables>
          <TestableReference
             skipped = "NO"
@@ -49,6 +54,28 @@
                BlueprintIdentifier = "D57721512D47E5BF00EC4A3A"
                BuildableName = "ImageFeedExtendUITests.xctest"
                BlueprintName = "ImageFeedExtendUITests"
+               ReferencedContainer = "container:ImageFeedExtend.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D50ADC752DAB01AD0041C57F"
+               BuildableName = "ImageFeedExtendTests1.xctest"
+               BlueprintName = "ImageFeedExtendTests1"
+               ReferencedContainer = "container:ImageFeedExtend.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "D50ADF0F2DAEE7FB0041C57F"
+               BuildableName = "ImageFeedExtendTests2.xctest"
+               BlueprintName = "ImageFeedExtendTests2"
                ReferencedContainer = "container:ImageFeedExtend.xcodeproj">
             </BuildableReference>
          </TestableReference>
